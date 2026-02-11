@@ -1,32 +1,32 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
-import { Providers } from './providers';
-import { Toaster } from '@/components/ui/toaster';
+import { Header } from '@/components/site/header';
+import { Footer } from '@/components/site/footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
   title: {
-    default: 'SaaS Starter Kit',
-    template: '%s | SaaS Starter Kit',
+    default: 'SO RC - Yokomo SO Resource',
+    template: '%s | SO RC',
   },
-  description: 'A production-ready SaaS starter kit built with Next.js 14, Supabase, and TypeScript',
-  keywords: ['SaaS', 'starter kit', 'Next.js', 'Supabase', 'TypeScript'],
-  authors: [{ name: 'Your Name' }],
+  description:
+    'Your comprehensive resource for Yokomo SO news, setups, and technical information',
+  keywords: ['Yokomo', 'SO', 'RC', 'buggy', 'offroad', 'setups', 'racing'],
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    siteName: 'SaaS Starter Kit',
-    title: 'SaaS Starter Kit',
+    siteName: 'SO RC',
+    title: 'SO RC - Yokomo SO Resource',
     description:
-      'A production-ready SaaS starter kit built with Next.js 14, Supabase, and TypeScript',
+      'Your comprehensive resource for Yokomo SO news, setups, and technical information',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'SaaS Starter Kit',
+    title: 'SO RC - Yokomo SO Resource',
     description:
-      'A production-ready SaaS starter kit built with Next.js 14, Supabase, and TypeScript',
+      'Your comprehensive resource for Yokomo SO news, setups, and technical information',
   },
   robots: {
     index: true,
@@ -40,12 +40,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={inter.className}>
-        <Providers>
-          {children}
-          <Toaster />
-        </Providers>
+        <div className="flex min-h-screen flex-col">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </div>
       </body>
     </html>
   );
