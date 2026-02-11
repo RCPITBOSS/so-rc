@@ -17,12 +17,12 @@ const manuals: ManualItem[] = [
   {
     title: 'SO 3.0 Manual',
     description: 'Complete build and reference manual for the Yokomo SO 3.0',
-    comingSoon: true,
+    file: '/manuals/so-3.0-manual.pdf',
   },
   {
     title: 'SO 2.0 Manual',
     description: 'Complete build and reference manual for the Yokomo SO 2.0',
-    comingSoon: true,
+    file: '/manuals/so-2.0-manual.pdf',
   },
   {
     title: 'Blank Setup Sheet',
