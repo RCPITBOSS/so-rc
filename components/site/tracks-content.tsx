@@ -10,8 +10,145 @@ interface Track {
   website?: string;
 }
 
-// Empty for now - tracks will be added over time
-const tracks: Track[] = [];
+const tracks: Track[] = [
+  {
+    name: "Rainman's Hobby and Raceway",
+    location: 'Bakersfield, CA',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'SD RC Raceway',
+    location: 'San Diego, CA',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Nor-Cal Hobbies & Raceway',
+    location: 'San Jose, CA',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Coyote Hobbies and Raceway',
+    location: 'Victorville, CA',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'MHOR R/C Raceway',
+    location: 'Aurora, CO',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'MHOR R/C Raceway',
+    location: 'Aurora, CO',
+    surface: 'Turf',
+  },
+  {
+    name: '5280 Raceway - CORRC',
+    location: 'Lakewood, CO',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: "Eaton's Intermountain RC Raceway",
+    location: 'Salt Lake City, UT',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Hobby Action RC Raceway and Shop Chandler',
+    location: 'Chandler, AZ',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Whip It RC Raceway & Hobbies',
+    location: 'Reno, NV',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Bad Fast Hobbies',
+    location: 'Sioux City, IA',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'Rhythm RC Raceway',
+    location: 'Hammonton, NJ',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'First State Hobbies',
+    location: 'Newark, DE',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'The Track',
+    location: 'Gaithersburg, MD',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Adrenaline RC Racing LLC & Hobby',
+    location: 'Winchester, VA',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Coastal RC Speedway and Hobbies',
+    location: 'Chesapeake, VA',
+    surface: 'Indoor Carpet',
+    website: 'https://coastalrchobbies.com',
+  },
+  {
+    name: 'Beachline Raceway R/C',
+    location: 'Cocoa, FL',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'SS Hobbies & Raceway',
+    location: 'Tampa, FL',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Dirt Burner Hobbies and Raceway',
+    location: 'Livonia, MI',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'RC One Racing',
+    location: 'Macomb, MI',
+    surface: 'Indoor Carpet',
+    website: 'https://rconeracing.com',
+  },
+  {
+    name: 'Limitless R/C',
+    location: 'Millington, MI',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: "Larry's Performance RC",
+    location: 'Shelby Township, MI',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: "Larry's Performance RC",
+    location: 'Shelby Township, MI',
+    surface: 'Turf',
+  },
+  {
+    name: 'EN Hobbies',
+    location: 'Columbus, OH',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: '997 RC Raceway',
+    location: 'Waynesboro, PA',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'HobbyTown',
+    location: 'Omaha, NE',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Fastlane Raceway LLC',
+    location: 'Blue Springs, MO',
+    surface: 'Indoor Dirt/Clay',
+  },
+];
 
 const surfaceFilters = ['All', 'Indoor Dirt/Clay', 'Indoor Carpet', 'Outdoor Dirt', 'Turf'];
 
@@ -31,7 +168,7 @@ export function TracksContent() {
   return (
     <>
       {/* Search and filter */}
-      <div className="mb-8 flex flex-col gap-4 sm:flex-row">
+      <div className="mb-6 flex flex-col gap-4 sm:flex-row">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" />
           <input
