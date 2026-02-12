@@ -152,15 +152,52 @@ const tracks: Track[] = [
 
 const surfaceFilters = ['All', 'Indoor Dirt/Clay', 'Indoor Carpet', 'Outdoor Dirt', 'Turf'];
 
+// Map state abbreviations to full names
+const stateMap: Record<string, string> = {
+  'AZ': 'Arizona',
+  'CA': 'California',
+  'CO': 'Colorado',
+  'DE': 'Delaware',
+  'FL': 'Florida',
+  'IA': 'Iowa',
+  'MD': 'Maryland',
+  'MI': 'Michigan',
+  'MO': 'Missouri',
+  'NE': 'Nebraska',
+  'NJ': 'New Jersey',
+  'NV': 'Nevada',
+  'OH': 'Ohio',
+  'PA': 'Pennsylvania',
+  'UT': 'Utah',
+  'VA': 'Virginia',
+};
+
+// Convert location with abbreviation to include full state name for searching
+function getSearchableLocation(location: string): string {
+  const parts = location.split(', ');
+  if (parts.length === 2) {
+    const [city, state] = parts;
+    const fullState = stateMap[state];
+    if (fullState) {
+      return `${city}, ${state} ${fullState}`.toLowerCase();
+    }
+  }
+  return location.toLowerCase();
+}
+
 export function TracksContent() {
   const [search, setSearch] = useState('');
   const [surfaceFilter, setSurfaceFilter] = useState('All');
 
   const filtered = tracks.filter((track) => {
+    const searchLower = search.toLowerCase();
+    const searchableLocation = getSearchableLocation(track.location);
+    
     const matchesSearch =
       search === '' ||
-      track.name.toLowerCase().includes(search.toLowerCase()) ||
-      track.location.toLowerCase().includes(search.toLowerCase());
+      track.name.toLowerCase().includes(searchLower) ||
+      searchableLocation.includes(searchLower);
+    
     const matchesSurface = surfaceFilter === 'All' || track.surface === surfaceFilter;
     return matchesSearch && matchesSurface;
   });
