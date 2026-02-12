@@ -15,6 +15,13 @@ export async function POST(request: Request) {
     const notes = formData.get('notes') as string;
     const file = formData.get('file') as File | null;
 
+    let attachments: { filename: string; content: Buffer }[] = [];
+    if (file) {
+      const bytes = await file.arrayBuffer();
+      const buffer = Buffer.from(bytes);
+      attachments = [{ filename: file.name, content: buffer }];
+    }
+
     await resend.emails.send({
       from: 'SO RC <noreply@superoffroadrc.com>',
       to: 'brianbengreenbaum@gmail.com',
@@ -27,8 +34,9 @@ export async function POST(request: Request) {
         <p><strong>Surface:</strong> ${surface}</p>
         <p><strong>Date:</strong> ${date}</p>
         <p><strong>Notes:</strong> ${notes || 'None'}</p>
-        ${file ? `<p><strong>File:</strong> ${file.name} was uploaded</p>` : ''}
+        ${file ? `<p><strong>File:</strong> ${file.name} attached</p>` : ''}
       `,
+      attachments,
     });
 
     return NextResponse.json({ success: true });
