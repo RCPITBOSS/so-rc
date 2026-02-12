@@ -12,24 +12,90 @@ interface Track {
 
 const tracks: Track[] = [
   {
-    name: "Rainman's Hobby and Raceway",
-    location: 'Bakersfield, CA',
+    name: '5280 Raceway - CORRC',
+    location: 'Lakewood, CO',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: '997 RC Raceway',
+    location: 'Waynesboro, PA',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'Adrenaline RC Racing LLC & Hobby',
+    location: 'Winchester, VA',
     surface: 'Indoor Dirt/Clay',
   },
   {
-    name: 'SD RC Raceway',
-    location: 'San Diego, CA',
-    surface: 'Indoor Dirt/Clay',
+    name: 'Bad Fast Hobbies',
+    location: 'Sioux City, IA',
+    surface: 'Indoor Carpet',
   },
   {
-    name: 'Nor-Cal Hobbies & Raceway',
-    location: 'San Jose, CA',
-    surface: 'Indoor Dirt/Clay',
+    name: 'Beachline Raceway R/C',
+    location: 'Cocoa, FL',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'Coastal RC Speedway and Hobbies',
+    location: 'Chesapeake, VA',
+    surface: 'Indoor Carpet',
+    website: 'https://coastalrchobbies.com',
   },
   {
     name: 'Coyote Hobbies and Raceway',
     location: 'Victorville, CA',
     surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Dirt Burner Hobbies and Raceway',
+    location: 'Livonia, MI',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: "Eaton's Intermountain RC Raceway",
+    location: 'Salt Lake City, UT',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'EN Hobbies',
+    location: 'Columbus, OH',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'Fastlane Raceway LLC',
+    location: 'Blue Springs, MO',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'First State Hobbies',
+    location: 'Newark, DE',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: 'Hobby Action RC Raceway and Shop Chandler',
+    location: 'Chandler, AZ',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'HobbyTown',
+    location: 'Omaha, NE',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: "Larry's Performance RC",
+    location: 'Shelby Township, MI',
+    surface: 'Indoor Carpet',
+  },
+  {
+    name: "Larry's Performance RC",
+    location: 'Shelby Township, MI',
+    surface: 'Turf',
+  },
+  {
+    name: 'Limitless R/C',
+    location: 'Millington, MI',
+    surface: 'Indoor Carpet',
   },
   {
     name: 'MHOR R/C Raceway',
@@ -42,69 +108,13 @@ const tracks: Track[] = [
     surface: 'Turf',
   },
   {
-    name: '5280 Raceway - CORRC',
-    location: 'Lakewood, CO',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: "Eaton's Intermountain RC Raceway",
-    location: 'Salt Lake City, UT',
+    name: 'Nor-Cal Hobbies & Raceway',
+    location: 'San Jose, CA',
     surface: 'Indoor Dirt/Clay',
   },
   {
-    name: 'Hobby Action RC Raceway and Shop Chandler',
-    location: 'Chandler, AZ',
-    surface: 'Indoor Dirt/Clay',
-  },
-  {
-    name: 'Whip It RC Raceway & Hobbies',
-    location: 'Reno, NV',
-    surface: 'Indoor Dirt/Clay',
-  },
-  {
-    name: 'Bad Fast Hobbies',
-    location: 'Sioux City, IA',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: 'Rhythm RC Raceway',
-    location: 'Hammonton, NJ',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: 'First State Hobbies',
-    location: 'Newark, DE',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: 'The Track',
-    location: 'Gaithersburg, MD',
-    surface: 'Indoor Dirt/Clay',
-  },
-  {
-    name: 'Adrenaline RC Racing LLC & Hobby',
-    location: 'Winchester, VA',
-    surface: 'Indoor Dirt/Clay',
-  },
-  {
-    name: 'Coastal RC Speedway and Hobbies',
-    location: 'Chesapeake, VA',
-    surface: 'Indoor Carpet',
-    website: 'https://coastalrchobbies.com',
-  },
-  {
-    name: 'Beachline Raceway R/C',
-    location: 'Cocoa, FL',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: 'SS Hobbies & Raceway',
-    location: 'Tampa, FL',
-    surface: 'Indoor Dirt/Clay',
-  },
-  {
-    name: 'Dirt Burner Hobbies and Raceway',
-    location: 'Livonia, MI',
+    name: "Rainman's Hobby and Raceway",
+    location: 'Bakersfield, CA',
     surface: 'Indoor Dirt/Clay',
   },
   {
@@ -114,38 +124,28 @@ const tracks: Track[] = [
     website: 'https://rconeracing.com',
   },
   {
-    name: 'Limitless R/C',
-    location: 'Millington, MI',
+    name: 'Rhythm RC Raceway',
+    location: 'Hammonton, NJ',
     surface: 'Indoor Carpet',
   },
   {
-    name: "Larry's Performance RC",
-    location: 'Shelby Township, MI',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: "Larry's Performance RC",
-    location: 'Shelby Township, MI',
-    surface: 'Turf',
-  },
-  {
-    name: 'EN Hobbies',
-    location: 'Columbus, OH',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: '997 RC Raceway',
-    location: 'Waynesboro, PA',
-    surface: 'Indoor Carpet',
-  },
-  {
-    name: 'HobbyTown',
-    location: 'Omaha, NE',
+    name: 'SD RC Raceway',
+    location: 'San Diego, CA',
     surface: 'Indoor Dirt/Clay',
   },
   {
-    name: 'Fastlane Raceway LLC',
-    location: 'Blue Springs, MO',
+    name: 'SS Hobbies & Raceway',
+    location: 'Tampa, FL',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'The Track',
+    location: 'Gaithersburg, MD',
+    surface: 'Indoor Dirt/Clay',
+  },
+  {
+    name: 'Whip It RC Raceway & Hobbies',
+    location: 'Reno, NV',
     surface: 'Indoor Dirt/Clay',
   },
 ];
