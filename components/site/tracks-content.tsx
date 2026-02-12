@@ -175,8 +175,9 @@ const stateMap: Record<string, string> = {
 // Convert location with abbreviation to include full state name for searching
 function getSearchableLocation(location: string): string {
   const parts = location.split(', ');
-  if (parts.length === 2) {
-    const [city, state] = parts;
+  if (parts.length === 2 && parts[1]) {
+    const city = parts[0];
+    const state = parts[1];
     const fullState = stateMap[state];
     if (fullState) {
       return `${city}, ${state} ${fullState}`.toLowerCase();
