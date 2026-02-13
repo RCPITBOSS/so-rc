@@ -1,8 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -10,6 +10,7 @@ const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/setups', label: 'Setups' },
   { href: '/tracks', label: 'Tracks' },
+  { href: '/tools', label: 'Tools' },
   { href: '/tips', label: 'Tips' },
   { href: '/manuals', label: 'Manuals' },
   { href: '/submit', label: 'Submit' },
