@@ -32,8 +32,6 @@ export function GearingCalculator() {
   const [timing, setTiming] = useState(30);
   const [timingRange, setTimingRange] = useState({ min: 20, max: 50 });
 
-  const selectedMotor = motors.find((m) => m.value === motorKV);
-
   const handleMotorChange = (value: string) => {
     const motor = motors.find((m) => m.value === value);
     if (!motor) return;
