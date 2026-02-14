@@ -3,17 +3,25 @@
 import { useState } from 'react';
 import { Download } from 'lucide-react';
 
-const surfaces = ['All', 'Indoor Dirt/Clay', 'Indoor Carpet', 'Outdoor Dirt', 'Turf'] as const;
-
 interface Setup {
+  driver: string;
   track: string;
   surface: string;
   date: string;
   file: string;
 }
 
-// Empty for now - setups will be added over time
-const setups: Setup[] = [];
+const surfaces = ['All', 'Indoor Dirt/Clay', 'Indoor Carpet', 'Outdoor Dirt', 'Turf'];
+
+const setups: Setup[] = [
+  {
+    driver: 'Brian Dunbar',
+    track: 'Hoosier - Clash of Champions',
+    surface: 'Indoor Dirt/Clay',
+    date: '1/2024',
+    file: '/setups/BrianDunbar.pdf',
+  },
+];
 
 export function SetupsContent() {
   const [activeSurface, setActiveSurface] = useState<string>('All');
@@ -60,18 +68,20 @@ export function SetupsContent() {
               key={i}
               className="rounded-lg border border-white/10 bg-[#111] p-5 transition-colors hover:border-white/20"
             >
-              <h3 className="mb-1 font-semibold text-white">{setup.track}</h3>
+              <h3 className="mb-1 font-semibold text-white">{setup.driver}</h3>
+              <div className="mb-1 text-sm text-gray-400">{setup.track}</div>
               <div className="mb-3 flex items-center gap-3 text-xs text-gray-500">
                 <span className="rounded bg-white/10 px-2 py-0.5">{setup.surface}</span>
                 <time>{setup.date}</time>
               </div>
               <a
                 href={setup.file}
-                download
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 text-sm font-medium text-yokomo-blue hover:underline"
               >
                 <Download className="h-4 w-4" />
-                Download Setup Sheet
+                View Setup Sheet
               </a>
             </div>
           ))}
