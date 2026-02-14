@@ -5,6 +5,7 @@ import { Download } from 'lucide-react';
 
 interface Setup {
   driver: string;
+  model: string;
   track: string;
   surface: string;
   date: string;
@@ -16,6 +17,7 @@ const surfaces = ['All', 'Indoor Dirt/Clay', 'Indoor Carpet', 'Outdoor Dirt', 'T
 const setups: Setup[] = [
   {
     driver: 'Brian Dunbar',
+    model: 'SO 2.0',
     track: 'Hoosier - Clash of Champions',
     surface: 'Indoor Dirt/Clay',
     date: '1/2024',
@@ -69,6 +71,7 @@ export function SetupsContent() {
               className="rounded-lg border border-white/10 bg-[#111] p-5 transition-colors hover:border-white/20"
             >
               <h3 className="mb-1 font-semibold text-white">{setup.driver}</h3>
+              <div className="mb-1 text-sm text-yokomo-blue">{setup.model}</div>
               <div className="mb-1 text-sm text-gray-400">{setup.track}</div>
               <div className="mb-3 flex items-center gap-3 text-xs text-gray-500">
                 <span className="rounded bg-white/10 px-2 py-0.5">{setup.surface}</span>
