@@ -29,7 +29,7 @@ export function BlogFeed({ posts }: { posts: BlogPost[] }) {
 
   return (
     <>
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="mx-auto max-w-2xl space-y-6">
         {shownPosts.map((post) => (
           <article
             key={post.slug}
