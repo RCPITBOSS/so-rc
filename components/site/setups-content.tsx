@@ -70,8 +70,10 @@ export function SetupsContent() {
               key={i}
               className="rounded-lg border border-white/10 bg-[#111] p-5 transition-colors hover:border-white/20"
             >
-              <h3 className="mb-1 font-semibold text-white">{setup.driver}</h3>
-              <div className="mb-1 text-sm text-yokomo-blue">{setup.model}</div>
+              <div className="mb-1 flex items-center justify-between">
+                <h3 className="font-semibold text-white">{setup.driver}</h3>
+                <span className="text-sm text-yokomo-blue">{setup.model}</span>
+              </div>
               <div className="mb-1 text-sm text-gray-400">{setup.track}</div>
               <div className="mb-3 flex items-center gap-3 text-xs text-gray-500">
                 <span className="rounded bg-white/10 px-2 py-0.5">{setup.surface}</span>
