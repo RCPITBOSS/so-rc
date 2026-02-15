@@ -107,6 +107,16 @@ export function PracticeTimer() {
 
   return (
     <div className="mx-auto max-w-2xl">
+      <style jsx>{`
+        @keyframes flash {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.3; }
+        }
+        .flash-animation {
+          animation: flash 0.5s ease-in-out infinite;
+        }
+      `}</style>
+
       <div className="rounded-lg border border-white/10 bg-[#111] p-8">
         {/* Duration selector */}
         <div className="mb-8">
@@ -136,7 +146,7 @@ export function PracticeTimer() {
           <div
             className={`mx-auto flex h-64 w-64 items-center justify-center rounded-full border-8 transition-colors ${
               hasFinished
-                ? 'border-racing-red bg-racing-red/10'
+                ? 'flash-animation border-racing-red bg-racing-red/10'
                 : isRunning
                   ? 'border-yokomo-blue bg-yokomo-blue/10'
                   : 'border-white/20 bg-white/5'
@@ -154,7 +164,7 @@ export function PracticeTimer() {
                 <div
                   className={`text-6xl font-bold tabular-nums ${
                     hasFinished
-                      ? 'text-racing-red'
+                      ? 'flash-animation text-racing-red'
                       : isRunning
                         ? 'text-yokomo-blue'
                         : 'text-white'
@@ -163,7 +173,7 @@ export function PracticeTimer() {
                   {formatTime(timeLeft)}
                 </div>
                 {hasFinished && (
-                  <div className="mt-2 animate-pulse text-sm font-medium text-racing-red">
+                  <div className="mt-2 text-sm font-medium text-racing-red flash-animation">
                     TIME'S UP!
                   </div>
                 )}
