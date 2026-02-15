@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { GearingCalculator } from '@/components/tools/gearing-calculator';
+import { Clock } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Tools',
@@ -19,6 +20,30 @@ export default function ToolsPage() {
           </p>
         </div>
 
+        {/* Practice Timer Link */}
+        <div className="mb-12">
+          <a
+            href="/tools/timer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group block rounded-lg border border-white/10 bg-[#111] p-6 transition-colors hover:border-yokomo-blue"
+          >
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-yokomo-blue/10">
+                <Clock className="h-6 w-6 text-yokomo-blue" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-white group-hover:text-yokomo-blue">
+                  Practice Timer
+                </h2>
+                <p className="text-sm text-gray-400">
+                  5-10 minute timer with alarm for practice runs
+                </p>
+              </div>
+            </div>
+          </a>
+        </div>
+
         {/* Gearing Calculator */}
         <div className="mb-12">
           <h2 className="mb-4 text-2xl font-bold text-white">Gearing & Speed Calculator</h2>
@@ -26,11 +51,6 @@ export default function ToolsPage() {
             Calculate top speed, FDR, and motor RPM for your Yokomo SO with Hobbywing motors
           </p>
           <GearingCalculator />
-        </div>
-
-        {/* Placeholder for future tools */}
-        <div className="rounded-lg border border-white/10 bg-[#111] p-8 text-center">
-          <p className="text-gray-500">More tools coming soon...</p>
         </div>
       </div>
     </div>
