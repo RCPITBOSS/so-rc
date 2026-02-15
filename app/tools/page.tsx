@@ -46,9 +46,9 @@ export default function ToolsPage() {
 
         {/* Gearing Calculator */}
         <div className="mb-12">
-          <h2 className="mb-4 text-2xl font-bold text-white">Gearing & Speed Calculator</h2>
+          <h2 className="mb-4 text-2xl font-bold text-white">Gearing Calculator</h2>
           <p className="mb-6 text-gray-400">
-            Calculate top speed, FDR, and motor RPM for your Yokomo SO with Hobbywing motors
+            Calculate gear ratio, FDR, and motor RPM for your Yokomo SO with Hobbywing motors
           </p>
           <GearingCalculator />
         </div>
