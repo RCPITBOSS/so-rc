@@ -11,15 +11,12 @@ interface Motor {
 }
 
 const motors: Motor[] = [
-  { value: '9450', label: '3.5T (9450 KV)', type: 'mod' },
   { value: '7340', label: '4.5T (7340 KV)', type: 'mod' },
-  { value: '6500', label: '5.0T (6500 KV)', type: 'mod' },
   { value: '5900', label: '5.5T (5900 KV)', type: 'mod' },
   { value: '5500', label: '6.0T (5500 KV)', type: 'mod' },
   { value: '5120', label: '6.5T (5120 KV)', type: 'mod' },
   { value: '4800', label: '7.0T (4800 KV)', type: 'mod' },
   { value: '4420', label: '7.5T (4420 KV)', type: 'mod' },
-  { value: '4200', label: '8.0T (4200 KV)', type: 'mod' },
   { value: '3970', label: '8.5T (3970 KV)', type: 'mod' },
   { value: '4100', label: '13.5T (4100 KV)', type: 'roar' },
   { value: '3150', label: '17.5T (3150 KV)', type: 'roar' },
@@ -28,7 +25,7 @@ const motors: Motor[] = [
 export function GearingCalculator() {
   const [pinion, setPinion] = useState(22);
   const [spur, setSpur] = useState(80);
-  const [motorKV, setMotorKV] = useState('9450');
+  const [motorKV, setMotorKV] = useState('7340');
   const [tire, setTire] = useState('84');
   const [customTire, setCustomTire] = useState(84);
   const [battery, setBattery] = useState('7.4');
@@ -62,6 +59,13 @@ export function GearingCalculator() {
 
   const timingBoost = 1 + timing / 1000;
   const motorRPM = Math.round(parseFloat(battery) * parseFloat(motorKV) * timingBoost);
+
+  const wheelRPM = motorRPM / ((spur / pinion) * TRANSMISSION_RATIO);
+  const wheelCircumferenceMM = Math.PI * tireDiameter;
+  const speedMMperMin = wheelRPM * wheelCircumferenceMM;
+
+  const theoreticalSpeedMPH = (speedMMperMin * 60) / 1609344;
+  const realWorldSpeedMPH = theoreticalSpeedMPH * 0.85;
 
   return (
     <div className="grid gap-6 md:grid-cols-2">
@@ -209,6 +213,20 @@ export function GearingCalculator() {
           <div className="rounded-lg border border-white/20 bg-black/50 p-3">
             <div className="text-sm text-gray-400">Motor RPM</div>
             <div className="text-xl font-semibold text-white">{motorRPM.toLocaleString()} RPM</div>
+          </div>
+
+          {/* Theoretical Speed */}
+          <div className="rounded-lg border border-blue-600/50 bg-blue-600/20 p-4">
+            <div className="mb-1 text-sm text-blue-400">Theoretical Top Speed</div>
+            <div className="text-3xl font-bold text-blue-400">{theoreticalSpeedMPH.toFixed(1)} mph</div>
+            <div className="mt-1 text-xs text-blue-400/60">No-load RPM calculation</div>
+          </div>
+
+          {/* Real-World Speed */}
+          <div className="rounded-lg border border-green-600/50 bg-green-600/20 p-4">
+            <div className="mb-1 text-sm text-green-400">Real-World Speed</div>
+            <div className="text-3xl font-bold text-green-400">{realWorldSpeedMPH.toFixed(1)} mph</div>
+            <div className="mt-1 text-xs text-green-400/60">~85% efficiency under load</div>
           </div>
         </div>
       </div>
