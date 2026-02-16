@@ -5,8 +5,6 @@ import { rateLimit } from '@/lib/rate-limit';
 import { isBot } from '@/lib/honeypot';
 import { trackSubmissionSchema } from '@/lib/validation';
 
-const resend = new Resend(process.env.RESEND_API_KEY);
-
 export async function POST(request: Request) {
   try {
     // 1. Rate limiting - 5 submissions per hour per IP
@@ -44,7 +42,14 @@ export async function POST(request: Request) {
     // 4. Validate data with Zod
     const validatedData = trackSubmissionSchema.parse(body);
 
-    // 5. Send email via Resend
+    // 5. Initialize Resend only when needed (not at build time)
+    if (!process.env.RESEND_API_KEY) {
+      throw new Error('RESEND_API_KEY is not configured');
+    }
+    
+    const resend = new Resend(process.env.RESEND_API_KEY);
+
+    // 6. Send email via Resend
     const { data, error } = await resend.emails.send({
       from: 'Track Submission <submissions@superoffroadrc.com>',
       to: [validatedData.email],

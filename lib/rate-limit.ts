@@ -22,7 +22,7 @@ export async function rateLimit(options: RateLimitOptions): Promise<{
   remaining: number;
   reset: number;
 }> {
-  const headersList = headers();
+  const headersList = await headers();
   const ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'anonymous';
   
   const now = Date.now();
