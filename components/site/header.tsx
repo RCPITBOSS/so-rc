@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { User } from '@supabase/supabase-js';
+import { signOut } from '@/app/auth/actions';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -17,7 +19,7 @@ const navLinks = [
   { href: '/about', label: 'About' },
 ];
 
-export function Header() {
+export function Header({ user }: { user: User | null }) {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -49,6 +51,23 @@ export function Header() {
               {link.label}
             </Link>
           ))}
+          {user ? (
+            <form action={signOut}>
+              <button
+                type="submit"
+                className="rounded-md px-3 py-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+              >
+                Sign out
+              </button>
+            </form>
+          ) : (
+            <Link
+              href="/auth/login"
+              className="rounded-md px-3 py-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+            >
+              Sign in
+            </Link>
+          )}
         </nav>
 
         {/* Mobile hamburger */}
@@ -80,6 +99,24 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            {user ? (
+              <form action={signOut}>
+                <button
+                  type="submit"
+                  className="w-full rounded-md px-3 py-2.5 text-left text-sm font-medium text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+                >
+                  Sign out
+                </button>
+              </form>
+            ) : (
+              <Link
+                href="/auth/login"
+                onClick={() => setMobileOpen(false)}
+                className="rounded-md px-3 py-2.5 text-sm font-medium text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+              >
+                Sign in
+              </Link>
+            )}
           </nav>
         </div>
       )}
