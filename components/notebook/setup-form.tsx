@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { createClient } from '@/lib/supabase'
 
 // ─── Style constants — matched to site design language (submit-forms, setups-content) ──
@@ -408,9 +408,39 @@ export function SetupForm({ userId }: { userId: string }) {
   )
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
+  const [savedSetups, setSavedSetups] = useState<{ id: string; name: string; created_at: string }[]>([])
+  const [loading, setLoading] = useState(false)
 
   const upd = (n: string, val: string) => setForm(prev => ({ ...prev, [n]: val }))
   const v   = (n: string) => form[n] ?? ''
+
+  useEffect(() => {
+    const supabase = createClient()
+    supabase
+      .from('setups')
+      .select('id, name, created_at')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => { if (data) setSavedSetups(data) })
+  }, [userId])
+
+  async function loadSetup(id: string) {
+    if (!id) return
+    setLoading(true)
+    const supabase = createClient()
+    const { data } = await supabase.from('setups').select('*').eq('id', id).single()
+    if (data) {
+      setForm(prev => {
+        const next = { ...prev }
+        for (const key of ALL_KEYS) {
+          const val = data[key]
+          next[key] = val == null ? '' : String(val)
+        }
+        return next
+      })
+    }
+    setLoading(false)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -440,7 +470,22 @@ export function SetupForm({ userId }: { userId: string }) {
 
       {/* ── Setup name + notes ── */}
       <div className={CARD}>
-        <h2 className="mb-6 text-xl font-semibold text-white">Setup Details</h2>
+        <div className="mb-6 flex items-center justify-between gap-4">
+          <h2 className="text-xl font-semibold text-white">Setup Details</h2>
+          <select
+            value=""
+            onChange={e => loadSetup(e.target.value)}
+            disabled={loading || savedSetups.length === 0}
+            className="rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-1.5 text-sm text-gray-300 focus:border-yokomo-blue focus:outline-none focus:ring-1 focus:ring-yokomo-blue disabled:opacity-50"
+          >
+            <option value="">{loading ? 'Loading…' : 'Load a saved setup…'}</option>
+            {savedSetups.map(s => (
+              <option key={s.id} value={s.id}>
+                {s.name || '(unnamed)'} — {new Date(s.created_at).toLocaleDateString()}
+              </option>
+            ))}
+          </select>
+        </div>
         <div className="space-y-4">
           <div>
             <label className={lCls}>Setup name</label>
