@@ -5,13 +5,13 @@ import { createClient } from '@/lib/supabase'
 
 // ─── Style constants — matched to site design language (submit-forms, setups-content) ──
 const lCls  = 'mb-1 block text-sm font-medium text-gray-300'
-const iCls  = 'w-full rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-yokomo-blue focus:outline-none focus:ring-1 focus:ring-yokomo-blue'
-const sCls  = 'w-full rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-2.5 text-sm text-white focus:border-yokomo-blue focus:outline-none focus:ring-1 focus:ring-yokomo-blue'
+const iCls  = 'h-10 w-full rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-2.5 text-sm text-white placeholder:text-gray-600 focus:border-yokomo-blue focus:outline-none focus:ring-1 focus:ring-yokomo-blue'
+const sCls  = 'h-10 w-full rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-2.5 text-sm text-white focus:border-yokomo-blue focus:outline-none focus:ring-1 focus:ring-yokomo-blue'
 const CARD  = 'rounded-lg border border-white/10 bg-[#111] p-6'
 const GROUP = 'rounded-lg border border-white/10 bg-[#0A0A0A] p-4'
 const TAB_A = 'rounded-lg px-4 py-2 text-sm font-medium transition-colors bg-yokomo-blue text-white'
 const TAB_I = 'rounded-lg px-4 py-2 text-sm font-medium transition-colors bg-white/5 text-gray-400 hover:bg-white/10 hover:text-white'
-const G2    = 'grid grid-cols-2 gap-4'
+const G2    = 'grid grid-cols-1 md:grid-cols-2 gap-4'
 
 // ─── Spring data ───────────────────────────────────────────────────────────────
 type Spring = { brand: string; part: string; color: string; rate: number }
@@ -465,17 +465,19 @@ export function SetupForm({ userId }: { userId: string }) {
 
       {/* ── Tabs ── */}
       <div>
-        <div className="mb-4 flex flex-wrap gap-2">
-          {TABS.map(t => (
-            <button
-              key={t.value}
-              type="button"
-              onClick={() => setTab(t.value)}
-              className={tab === t.value ? TAB_A : TAB_I}
-            >
-              {t.label}
-            </button>
-          ))}
+        <div className="sticky top-16 z-10 overflow-x-auto bg-[#0A0A0A] py-3">
+          <div className="flex gap-2 whitespace-nowrap">
+            {TABS.map(t => (
+              <button
+                key={t.value}
+                type="button"
+                onClick={() => setTab(t.value)}
+                className={tab === t.value ? TAB_A : TAB_I}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* ── Track & Conditions ── */}
