@@ -37,3 +37,13 @@ Next.js 16 App Router site for the Yokomo SO RC buggy. Dark-themed (`#0A0A0A` bg
 **Custom Tailwind colors**: `yokomo-blue` (`#0066FF`), `racing-yellow` (`#FFCC00`), `racing-red` (`#DC2626`), `slate-grey` (`#6B7280`).
 
 **Path alias**: `@/` maps to the project root (configured in `tsconfig.json`).
+
+## Lessons Learned
+
+**Never use shadcn Tabs for interactive tab UIs.** The `TabsTrigger` component in `components/ui/tabs.tsx` has default active-state classes (`data-[state=active]:bg-background`, `data-[state=active]:text-foreground`, `data-[state=active]:shadow-sm`) that cannot be reliably overridden via `className` because `twMerge` does not always resolve conflicts with shadcn CSS variable-based utilities. Use plain HTML instead: a `div` with `flex` for the tab bar, `<button type="button">` for each tab toggling a `useState` value, and `{tab === 'x' && <div>...</div>}` for conditional panel rendering.
+
+**Always read the design reference component before building UI.** For this project, `components/tools/gearing-calculator.tsx` is the canonical style reference. Match its card class (`rounded-lg border border-white/10 bg-[#111] p-6`), label class (`mb-1 block text-sm text-gray-400`), and input class (`w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-white focus:border-yokomo-blue focus:outline-none`) exactly.
+
+**Style constants must be verified against the design reference before use.** Do not derive style constants from memory or assumption — read the reference file and copy classes directly.
+
+**Never leave new form components uncommitted.** Commit `components/notebook/setup-form.tsx` immediately after it first renders correctly, before any iterative styling changes.
