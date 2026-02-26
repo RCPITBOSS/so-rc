@@ -51,6 +51,19 @@ export function Header({ user }: { user: User | null }) {
               {link.label}
             </Link>
           ))}
+          {user && (
+            <Link
+              href="/notebook"
+              className={cn(
+                'rounded-md px-3 py-2 text-sm font-medium transition-colors',
+                pathname === '/notebook'
+                  ? 'text-yokomo-blue'
+                  : 'text-gray-400 hover:text-white'
+              )}
+            >
+              Notebook
+            </Link>
+          )}
           {user ? (
             <form action={signOut}>
               <button
@@ -99,6 +112,20 @@ export function Header({ user }: { user: User | null }) {
                 {link.label}
               </Link>
             ))}
+            {user && (
+              <Link
+                href="/notebook"
+                onClick={() => setMobileOpen(false)}
+                className={cn(
+                  'rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
+                  pathname === '/notebook'
+                    ? 'bg-yokomo-blue/10 text-yokomo-blue'
+                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                )}
+              >
+                Notebook
+              </Link>
+            )}
             {user ? (
               <form action={signOut}>
                 <button

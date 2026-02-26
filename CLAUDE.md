@@ -47,3 +47,18 @@ Next.js 16 App Router site for the Yokomo SO RC buggy. Dark-themed (`#0A0A0A` bg
 **Style constants must be verified against the design reference before use.** Do not derive style constants from memory or assumption — read the reference file and copy classes directly.
 
 **Never leave new form components uncommitted.** Commit `components/notebook/setup-form.tsx` immediately after it first renders correctly, before any iterative styling changes.
+
+## Prompt Efficiency Rules
+- Always combine related changes into a single task. Never make one small change at a time when multiple related changes are needed.
+- Before making any UI change, read the relevant component files first. Never guess at class names or structure.
+- When fixing a bug, identify the root cause before touching any code. Do not make speculative edits.
+- Never leave components uncommitted after they first render correctly.
+- When adding a nav item, always handle: correct label, correct href, correct visibility conditions (logged in/out), mobile menu — all in one pass.
+- When building a form, always read the data model doc AND a reference component before writing any code.
+- Do not ask clarifying questions mid-task. Make reasonable decisions and document them.
+
+## Common Mistakes to Avoid
+- Do not use shadcn Tabs — use plain HTML buttons with useState
+- Do not stretch full-width on inputs without checking the grid layout first
+- Do not commit with "nothing to commit" errors — check git status first
+- Do not run dev server if one is already running — check with lsof -i :3000 first

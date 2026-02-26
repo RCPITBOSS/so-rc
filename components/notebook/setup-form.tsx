@@ -430,10 +430,14 @@ export function SetupForm({ userId }: { userId: string }) {
     const supabase = createClient()
     const { data } = await supabase.from('setups').select('*').eq('id', id).single()
     if (data) {
+      const sd: Record<string, unknown> = data.setup_data ?? {}
       setForm(prev => {
         const next = { ...prev }
+        next['name']  = data.name  ?? ''
+        next['notes'] = data.notes ?? ''
         for (const key of ALL_KEYS) {
-          const val = data[key]
+          if (key === 'name' || key === 'notes') continue
+          const val = sd[key]
           next[key] = val == null ? '' : String(val)
         }
         return next
@@ -447,19 +451,26 @@ export function SetupForm({ userId }: { userId: string }) {
     setStatus('saving')
     setErrorMsg('')
 
-    const payload: Record<string, string | number | null> = {
-      user_id:    userId,
+    // Build setup_data JSONB from all form fields except top-level columns
+    const setupData: Record<string, string | number | null> = {
       front_tire: 'JConcepts Smoothie 2',
       rear_tire:  'JConcepts Smoothie 2',
     }
     for (const [key, value] of Object.entries(form)) {
-      payload[key] = NUMBER_FIELDS.has(key)
+      if (key === 'name' || key === 'notes') continue
+      setupData[key] = NUMBER_FIELDS.has(key)
         ? (value === '' ? null : Number(value))
         : (value || null)
     }
 
     const supabase = createClient()
-    const { error } = await supabase.from('setups').insert(payload)
+    const { error } = await supabase.from('setups').insert({
+      user_id:    userId,
+      name:       form.name || null,
+      notes:      form.notes || null,
+      car_model:  form.main_chassis || null,
+      setup_data: setupData,
+    })
 
     if (error) { setErrorMsg(error.message); setStatus('error') }
     else        { setStatus('saved') }
