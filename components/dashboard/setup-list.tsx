@@ -13,8 +13,32 @@ interface Setup {
   notes: string | null
 }
 
-export function SetupList({ initialSetups }: { initialSetups: Setup[] }) {
+interface Run {
+  id: string
+  setup_snapshot_id: string
+  run_type: string | null
+  rating: number | null
+  crashes: number | null
+  notes: string | null
+  created_at: string
+}
+
+export function SetupList({
+  initialSetups,
+  initialRuns,
+}: {
+  initialSetups: Setup[]
+  initialRuns: Run[]
+}) {
   const [setups, setSetups] = useState(initialSetups)
+
+  // Group runs by setup id, already ordered desc by created_at from server
+  const runsBySetup = initialRuns.reduce<Record<string, Run[]>>((acc, run) => {
+    const key = run.setup_snapshot_id
+    if (!acc[key]) acc[key] = []
+    acc[key].push(run)
+    return acc
+  }, {})
 
   async function handleDelete(id: string) {
     if (!confirm('Delete this setup? This cannot be undone.')) return
@@ -41,45 +65,90 @@ export function SetupList({ initialSetups }: { initialSetups: Setup[] }) {
 
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      {setups.map(setup => (
-        <div
-          key={setup.id}
-          className="rounded-lg border border-white/10 bg-[#111] p-5 transition-colors hover:border-white/20"
-        >
-          {setup.car_model && (
-            <div className="mb-1 text-sm text-yokomo-blue">{setup.car_model}</div>
-          )}
-          <h3 className="mb-1 font-semibold text-white">
-            {setup.name || '(unnamed)'}
-          </h3>
-          <p className="mb-3 text-xs text-gray-500">
-            {new Date(setup.created_at).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p>
-          {setup.notes && (
-            <p className="mb-4 line-clamp-2 text-sm text-gray-400">{setup.notes}</p>
-          )}
-          <div className="flex items-center justify-between">
-            <Link
-              href="/notebook"
-              className="inline-flex items-center text-sm font-medium text-yokomo-blue hover:underline"
-            >
-              Load &rarr;
-            </Link>
-            <button
-              type="button"
-              onClick={() => handleDelete(setup.id)}
-              aria-label="Delete setup"
-              className="rounded p-1 text-gray-600 transition-colors hover:text-racing-red"
-            >
-              <Trash2 className="h-4 w-4" />
-            </button>
+      {setups.map(setup => {
+        const setupRuns = runsBySetup[setup.id] ?? []
+        const runCount  = setupRuns.length
+        const latestRun = setupRuns[0] ?? null
+
+        return (
+          <div
+            key={setup.id}
+            className="rounded-lg border border-white/10 bg-[#111] p-5 transition-colors hover:border-white/20"
+          >
+            {setup.car_model && (
+              <div className="mb-1 text-sm text-yokomo-blue">{setup.car_model}</div>
+            )}
+            <h3 className="mb-1 font-semibold text-white">
+              {setup.name || '(unnamed)'}
+            </h3>
+            <p className="mb-1 text-xs text-gray-500">
+              {new Date(setup.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </p>
+
+            {/* Run summary */}
+            <div className="mb-3">
+              <p className="text-xs text-gray-500">
+                {runCount === 0
+                  ? 'No runs logged'
+                  : `${runCount} run${runCount === 1 ? '' : 's'} logged`}
+              </p>
+              {latestRun && (latestRun.run_type || latestRun.rating) && (
+                <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-600">
+                  {latestRun.run_type && (
+                    <span>{latestRun.run_type}</span>
+                  )}
+                  {latestRun.run_type && latestRun.rating ? <span>·</span> : null}
+                  {latestRun.rating != null && latestRun.rating > 0 && (
+                    <span>
+                      {[1, 2, 3, 4, 5].map(n => (
+                        <span
+                          key={n}
+                          className={n <= (latestRun.rating ?? 0) ? 'text-racing-yellow' : 'text-gray-700'}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                </p>
+              )}
+            </div>
+
+            {setup.notes && (
+              <p className="mb-4 line-clamp-2 text-sm text-gray-400">{setup.notes}</p>
+            )}
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Link
+                  href="/notebook"
+                  className="inline-flex items-center text-sm font-medium text-yokomo-blue hover:underline"
+                >
+                  Load &rarr;
+                </Link>
+                <Link
+                  href={`/notebook/run/${setup.id}`}
+                  className="inline-flex items-center text-sm font-medium text-gray-400 transition-colors hover:text-white"
+                >
+                  Log a run &rarr;
+                </Link>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleDelete(setup.id)}
+                aria-label="Delete setup"
+                className="rounded p-1 text-gray-600 transition-colors hover:text-racing-red"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            </div>
           </div>
-        </div>
-      ))}
+        )
+      })}
     </div>
   )
 }

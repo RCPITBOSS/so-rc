@@ -15,6 +15,15 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
+  const setupIds = (setups ?? []).map(s => s.id)
+  const { data: runs } = setupIds.length > 0
+    ? await supabase
+        .from('runs')
+        .select('id, run_type, rating, crashes, notes, created_at, setup_snapshot_id')
+        .in('setup_snapshot_id', setupIds)
+        .order('created_at', { ascending: false })
+    : { data: [] }
+
   const displayName =
     user.user_metadata?.display_name ||
     user.user_metadata?.full_name ||
@@ -47,7 +56,7 @@ export default async function DashboardPage() {
       {/* ── Your Setups ── */}
       <section>
         <h2 className="mb-4 text-lg font-semibold text-white">Your Setups</h2>
-        <SetupList initialSetups={setups ?? []} />
+        <SetupList initialSetups={setups ?? []} initialRuns={runs ?? []} />
       </section>
 
     </div>

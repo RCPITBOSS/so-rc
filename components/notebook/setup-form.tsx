@@ -105,7 +105,6 @@ const SHAFT_LENGTHS = [
   '29', '29.25', '29.5',
 ]
 
-const CRASHES = Array.from({ length: 21 }, (_, i) => String(i))
 
 // ─── Select option lists ───────────────────────────────────────────────────────
 const O = {
@@ -114,9 +113,6 @@ const O = {
   traction_level:         ['Low', 'Medium', 'High', 'Blue Groove'],
   track_temp:             ['Cold (<50°F)', 'Mild (50–70°F)', 'Warm (70–85°F)', 'Hot (>85°F)'],
   conditions:             ['Wet', 'Dry', 'Dusty'],
-  run_type:               ['Practice', 'Qualifier', 'Main'],
-  rating:                 ['1', '2', '3', '4', '5'],
-  motor_temp:             ['Cool (<120°F)', 'Warm (120–150°F)', 'Hot (150–180°F)', 'Super Hot (>180°F)'],
   main_chassis:           ['SO 2.0', 'SO 3.0', 'DTM 3.1', 'CAL 3.1'],
   side_plate:             ['Standard', 'Graphite'],
   gearbox:                ['LD', 'LCA', 'LCG'],
@@ -192,14 +188,12 @@ const NUMBER_FIELDS = new Set([
   'front_shock_spring_rate', 'rear_shock_spring_rate',
   'front_shock_oil_cst', 'rear_shock_oil_cst',
   'total_weight', 'spur', 'pinion',
-  'rating', 'crashes',
 ])
 
 // ─── All form keys ─────────────────────────────────────────────────────────────
 const ALL_KEYS = [
   'name', 'notes',
   'event_name', 'track_name', 'date', 'surface', 'track_feel', 'traction_level', 'track_temp', 'conditions',
-  'run_type', 'rating', 'motor_temp', 'crashes', 'run_notes', 'setup_changes',
   'main_chassis', 'side_plate', 'gearbox', 'diff_height', 'diff_type', 'diff_gear', 'diff_decoder',
   'slipper', 'battery_side_plate', 'battery_cradle', 'servo_weight', 'chassis_weight', 'battery_weight', 'total_weight',
   'turnbuckles', 'ball_studs', 'screws',
@@ -237,7 +231,6 @@ const ALL_KEYS = [
 
 const TABS = [
   { value: 'track',        label: 'Track' },
-  { value: 'run',          label: 'Run Log' },
   { value: 'chassis',      label: 'Chassis' },
   { value: 'hardware',     label: 'Hardware' },
   { value: 'front',        label: 'Front' },
@@ -294,26 +287,6 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
   )
 }
 
-function StarRating({ v, upd }: { v: (n: string) => string; upd: (n: string, val: string) => void }) {
-  const current = Number(v('rating')) || 0
-  return (
-    <div>
-      <label className={lCls}>Rating</label>
-      <div className="flex gap-2">
-        {[1, 2, 3, 4, 5].map(n => (
-          <button
-            key={n}
-            type="button"
-            onClick={() => upd('rating', current === n ? '' : String(n))}
-            className={`text-3xl leading-none transition-colors ${n <= current ? 'text-racing-yellow' : 'text-gray-600 hover:text-gray-400'}`}
-          >
-            ★
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
 
 function ShockPanel({
   pos, v, upd,
@@ -544,38 +517,6 @@ export function SetupForm({ userId }: { userId: string }) {
               <Field label="Track temp"  name="track_temp"     v={v('track_temp')}     upd={upd} opts={O.track_temp} />
               <Field label="Track feel"  name="track_feel"     v={v('track_feel')}     upd={upd} opts={O.track_feel} />
               <Field label="Traction"    name="traction_level" v={v('traction_level')} upd={upd} opts={O.traction_level} />
-            </div>
-          </div>
-        )}
-
-        {/* ── Run Log ── */}
-        {tab === 'run' && (
-          <div className={CARD}>
-            <h2 className="mb-6 text-xl font-semibold text-white">Run Log</h2>
-            <div className={G2}>
-              <Field label="Run type" name="run_type" v={v('run_type')} upd={upd} opts={O.run_type} />
-              <Field label="Crashes"  name="crashes"  v={v('crashes')}  upd={upd} opts={CRASHES} />
-              <StarRating v={v} upd={upd} />
-            </div>
-            <div className="mt-4 space-y-4">
-              <div>
-                <label className={lCls}>How the car felt</label>
-                <textarea
-                  name="run_notes" value={v('run_notes')}
-                  onChange={e => upd('run_notes', e.target.value)}
-                  placeholder="Loose, pushing, good balance…"
-                  rows={4} className={`${iCls} resize-none`}
-                />
-              </div>
-              <div>
-                <label className={lCls}>Setup changes this run</label>
-                <textarea
-                  name="setup_changes" value={v('setup_changes')}
-                  onChange={e => upd('setup_changes', e.target.value)}
-                  placeholder="What changed from the previous run…"
-                  rows={4} className={`${iCls} resize-none`}
-                />
-              </div>
             </div>
           </div>
         )}
