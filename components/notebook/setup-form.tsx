@@ -299,13 +299,13 @@ function StarRating({ v, upd }: { v: (n: string) => string; upd: (n: string, val
   return (
     <div>
       <label className={lCls}>Rating</label>
-      <div className="flex gap-1">
+      <div className="flex gap-2">
         {[1, 2, 3, 4, 5].map(n => (
           <button
             key={n}
             type="button"
             onClick={() => upd('rating', current === n ? '' : String(n))}
-            className={`text-2xl leading-none transition-colors ${n <= current ? 'text-racing-yellow' : 'text-gray-600 hover:text-gray-400'}`}
+            className={`text-3xl leading-none transition-colors ${n <= current ? 'text-racing-yellow' : 'text-gray-600 hover:text-gray-400'}`}
           >
             ★
           </button>
@@ -564,7 +564,7 @@ export function SetupForm({ userId }: { userId: string }) {
                   name="run_notes" value={v('run_notes')}
                   onChange={e => upd('run_notes', e.target.value)}
                   placeholder="Loose, pushing, good balance…"
-                  rows={3} className={`${iCls} resize-none`}
+                  rows={4} className={`${iCls} resize-none`}
                 />
               </div>
               <div>
@@ -573,7 +573,7 @@ export function SetupForm({ userId }: { userId: string }) {
                   name="setup_changes" value={v('setup_changes')}
                   onChange={e => upd('setup_changes', e.target.value)}
                   placeholder="What changed from the previous run…"
-                  rows={3} className={`${iCls} resize-none`}
+                  rows={4} className={`${iCls} resize-none`}
                 />
               </div>
             </div>
