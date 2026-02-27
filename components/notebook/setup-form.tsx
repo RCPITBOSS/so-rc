@@ -147,10 +147,18 @@ const O = {
   steering_block_orient:  ['Narrow Low', 'Narrow High', 'Wide Low', 'Wide High'],
   kingpin_top:            ['Black', 'Thick'],
   kingpin_bottom:         ['Black', 'Thick'],
-  shim:                   ['0', '2.5mm'],
+  shim:                   ['0', '0.5', '1', '1.5', '2', '2.5'],
+  center_link_height:     ['0', '0.5mm', '-1mm', '-1.5mm', '-2mm'],
+  center_link_washers:    ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
+  steering_block_washers: ['0', '0.5', '1', '1.5', '2', '2.5', '3'],
+  front_hub_height:       ['0 up', '0.5 up', '1 up', '1.5 center', '1 down', '0.5 down', '0 down'],
+  front_camber:           ['-4', '-3.5', '-3', '-2.5', '-2', '-1.5', '-1', '-0.5', '0'],
+  front_toe:              ['0.5 in', '1 in', '1.5 in', '2 in', '2.5 in', '3 in', '0', '0.5 out', '1 out', '1.5 out', '2 out', '2.5 out', '3 out'],
   caster_insert:          ['-5°', '-2.5°', '0°', '2.5°', '5°'],
   front_axle:             ['4.5mm', '5mm'],
   front_sway_bar:         ['None', '0.9mm', '1.0mm', '1.1mm'],
+  rear_bsm_washers:       ['0', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
+  rear_toe:               ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4'],
   rear_arm_length:        ['S3', 'L5'],
   rear_arm_pos:           ['Forward', 'Middle', 'Back'],
   rear_susp_mount:        ['Standard', 'High Mount'],
@@ -179,10 +187,8 @@ const O = {
 
 // ─── Number fields ─────────────────────────────────────────────────────────────
 const NUMBER_FIELDS = new Set([
-  'front_center_link_height', 'front_center_link_washers', 'front_steering_block_washers',
-  'rear_ball_stud_mount_washers',
-  'front_camber', 'front_toe', 'front_ride_height',
-  'rear_camber', 'rear_toe', 'rear_ride_height',
+  'front_ride_height',
+  'rear_ride_height',
   'front_shock_spring_rate', 'rear_shock_spring_rate',
   'front_shock_oil_cst', 'rear_shock_oil_cst',
   'total_weight', 'spur', 'pinion',
@@ -201,7 +207,7 @@ const ALL_KEYS = [
   'front_ball_stud_position', 'front_arm_shock_mount', 'front_arm_material',
   'front_suspension_mount_height', 'front_suspension_mount_material',
   'front_center_link_material', 'front_center_link_height', 'front_center_link_washers',
-  'front_hub_carrier_material', 'front_hub_carrier_position',
+  'front_hub_carrier_material', 'front_hub_carrier_position', 'front_hub_height',
   'front_steering_block_material', 'front_steering_block_orientation', 'front_steering_block_washers',
   'front_kingpin_top', 'front_kingpin_bottom', 'front_shim_above', 'front_shim_below', 'front_caster_insert',
   'front_camber', 'front_camber_dir', 'front_toe', 'front_toe_dir',
@@ -278,44 +284,33 @@ function Field({
   )
 }
 
-function InOutField({
-  label, name, v, upd,
-}: {
-  label: string
-  name: string
-  v: (n: string) => string
-  upd: (n: string, val: string) => void
-}) {
-  return (
-    <div>
-      <label className={lCls}>{label}</label>
-      <div className="flex gap-2">
-        <input
-          type="number" step="any"
-          value={v(name)}
-          onChange={e => upd(name, e.target.value)}
-          placeholder="0.0"
-          className={`${iCls} min-w-0 flex-1`}
-        />
-        <select
-          value={v(`${name}_dir`)}
-          onChange={e => upd(`${name}_dir`, e.target.value)}
-          className={`${sCls} w-20 shrink-0`}
-        >
-          <option value="">—</option>
-          <option>In</option>
-          <option>Out</option>
-        </select>
-      </div>
-    </div>
-  )
-}
 
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className={GROUP}>
       <h3 className="mb-3 text-sm font-semibold text-white">{title}</h3>
       <div className={G2}>{children}</div>
+    </div>
+  )
+}
+
+function StarRating({ v, upd }: { v: (n: string) => string; upd: (n: string, val: string) => void }) {
+  const current = Number(v('rating')) || 0
+  return (
+    <div>
+      <label className={lCls}>Rating</label>
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map(n => (
+          <button
+            key={n}
+            type="button"
+            onClick={() => upd('rating', current === n ? '' : String(n))}
+            className={`text-2xl leading-none transition-colors ${n <= current ? 'text-racing-yellow' : 'text-gray-600 hover:text-gray-400'}`}
+          >
+            ★
+          </button>
+        ))}
+      </div>
     </div>
   )
 }
@@ -503,7 +498,7 @@ export function SetupForm({ userId }: { userId: string }) {
             <input
               name="name" type="text" value={v('name')}
               onChange={e => upd('name', e.target.value)}
-              placeholder="e.g. Carpet – warm tyres – Q1"
+              placeholder="Name your setup..."
               required className={iCls}
             />
           </div>
@@ -541,14 +536,14 @@ export function SetupForm({ userId }: { userId: string }) {
           <div className={CARD}>
             <h2 className="mb-6 text-xl font-semibold text-white">Track &amp; Conditions</h2>
             <div className={G2}>
-              <Field label="Event name"  name="event_name"     v={v('event_name')}     upd={upd} />
               <Field label="Track name"  name="track_name"     v={v('track_name')}     upd={upd} />
+              <Field label="Event name"  name="event_name"     v={v('event_name')}     upd={upd} />
               <Field label="Date"        name="date"           v={v('date')}           upd={upd} type="date" />
               <Field label="Surface"     name="surface"        v={v('surface')}        upd={upd} opts={O.surface} />
+              <Field label="Conditions"  name="conditions"     v={v('conditions')}     upd={upd} opts={O.conditions} />
+              <Field label="Track temp"  name="track_temp"     v={v('track_temp')}     upd={upd} opts={O.track_temp} />
               <Field label="Track feel"  name="track_feel"     v={v('track_feel')}     upd={upd} opts={O.track_feel} />
               <Field label="Traction"    name="traction_level" v={v('traction_level')} upd={upd} opts={O.traction_level} />
-              <Field label="Track temp"  name="track_temp"     v={v('track_temp')}     upd={upd} opts={O.track_temp} />
-              <Field label="Conditions"  name="conditions"     v={v('conditions')}     upd={upd} opts={O.conditions} />
             </div>
           </div>
         )}
@@ -558,10 +553,9 @@ export function SetupForm({ userId }: { userId: string }) {
           <div className={CARD}>
             <h2 className="mb-6 text-xl font-semibold text-white">Run Log</h2>
             <div className={G2}>
-              <Field label="Run type"   name="run_type"   v={v('run_type')}   upd={upd} opts={O.run_type} />
-              <Field label="Rating"     name="rating"     v={v('rating')}     upd={upd} opts={O.rating} />
-              <Field label="Motor temp" name="motor_temp" v={v('motor_temp')} upd={upd} opts={O.motor_temp} />
-              <Field label="Crashes"    name="crashes"    v={v('crashes')}    upd={upd} opts={CRASHES} />
+              <Field label="Run type" name="run_type" v={v('run_type')} upd={upd} opts={O.run_type} />
+              <Field label="Crashes"  name="crashes"  v={v('crashes')}  upd={upd} opts={CRASHES} />
+              <StarRating v={v} upd={upd} />
             </div>
             <div className="mt-4 space-y-4">
               <div>
@@ -651,36 +645,35 @@ export function SetupForm({ userId }: { userId: string }) {
               </Group>
 
               <Group title="Center Link">
-                <Field label="Material"    name="front_center_link_material" v={v('front_center_link_material')} upd={upd} opts={O.center_link_material} />
-                <Field label="Height (mm)" name="front_center_link_height"   v={v('front_center_link_height')}   upd={upd} type="number" />
-                <Field label="Washers"     name="front_center_link_washers"  v={v('front_center_link_washers')}  upd={upd} type="number" />
+                <Field label="Material"          name="front_center_link_material" v={v('front_center_link_material')} upd={upd} opts={O.center_link_material} />
+                <Field label="Center link height" name="front_center_link_height"  v={v('front_center_link_height')}   upd={upd} opts={O.center_link_height} />
+                <Field label="Ball stud washers" name="front_center_link_washers"  v={v('front_center_link_washers')}  upd={upd} opts={O.center_link_washers} />
               </Group>
 
               <Group title="Hub Carrier">
-                <Field label="Material" name="front_hub_carrier_material" v={v('front_hub_carrier_material')} upd={upd} opts={O.front_hub_carrier_mat} />
-                <Field label="Position" name="front_hub_carrier_position" v={v('front_hub_carrier_position')} upd={upd} opts={O.front_hub_carrier_pos} />
+                <Field label="Material"      name="front_hub_carrier_material" v={v('front_hub_carrier_material')} upd={upd} opts={O.front_hub_carrier_mat} />
+                <Field label="Position"      name="front_hub_carrier_position" v={v('front_hub_carrier_position')} upd={upd} opts={O.front_hub_carrier_pos} />
+                <Field label="Caster insert" name="front_caster_insert"        v={v('front_caster_insert')}        upd={upd} opts={O.caster_insert} />
               </Group>
 
               <Group title="Steering Block">
-                <Field label="Material"    name="front_steering_block_material"    v={v('front_steering_block_material')}    upd={upd} opts={O.steering_block_mat} />
-                <Field label="Orientation" name="front_steering_block_orientation" v={v('front_steering_block_orientation')} upd={upd} opts={O.steering_block_orient} />
-                <Field label="Washers"     name="front_steering_block_washers"     v={v('front_steering_block_washers')}     upd={upd} type="number" />
+                <Field label="Material"          name="front_steering_block_material"    v={v('front_steering_block_material')}    upd={upd} opts={O.steering_block_mat} />
+                <Field label="Orientation"       name="front_steering_block_orientation" v={v('front_steering_block_orientation')} upd={upd} opts={O.steering_block_orient} />
+                <Field label="Ball stud washers" name="front_steering_block_washers"     v={v('front_steering_block_washers')}     upd={upd} opts={O.steering_block_washers} />
+                <Field label="Axle width"        name="front_axle"                       v={v('front_axle')}                       upd={upd} opts={O.front_axle} />
               </Group>
 
               <Group title="Kingpin">
-                <Field label="Top"           name="front_kingpin_top"    v={v('front_kingpin_top')}    upd={upd} opts={O.kingpin_top} />
-                <Field label="Bottom"        name="front_kingpin_bottom" v={v('front_kingpin_bottom')} upd={upd} opts={O.kingpin_bottom} />
-                <Field label="Shim above"    name="front_shim_above"     v={v('front_shim_above')}     upd={upd} opts={O.shim} />
-                <Field label="Shim below"    name="front_shim_below"     v={v('front_shim_below')}     upd={upd} opts={O.shim} />
-                <Field label="Caster insert" name="front_caster_insert"  v={v('front_caster_insert')}  upd={upd} opts={O.caster_insert} />
+                <Field label="Top"        name="front_kingpin_top"    v={v('front_kingpin_top')}    upd={upd} opts={O.kingpin_top} />
+                <Field label="Bottom"     name="front_kingpin_bottom" v={v('front_kingpin_bottom')} upd={upd} opts={O.kingpin_bottom} />
+                <Field label="Shim above" name="front_shim_above"     v={v('front_shim_above')}     upd={upd} opts={O.shim} />
+                <Field label="Shim below" name="front_shim_below"     v={v('front_shim_below')}     upd={upd} opts={O.shim} />
               </Group>
 
               <Group title="Geometry">
-                <InOutField label="Camber (°)"    name="front_camber"      v={v} upd={upd} />
-                <InOutField label="Toe (°)"       name="front_toe"         v={v} upd={upd} />
-                <Field label="Ride height (mm)"   name="front_ride_height" v={v('front_ride_height')} upd={upd} type="number" />
-                <Field label="Axle"               name="front_axle"        v={v('front_axle')}        upd={upd} opts={O.front_axle} />
-                <Field label="Sway bar"           name="front_sway_bar"    v={v('front_sway_bar')}    upd={upd} opts={O.front_sway_bar} />
+                <Field label="Camber (°)"       name="front_camber"      v={v('front_camber')}      upd={upd} opts={O.front_camber} />
+                <Field label="Toe (°)"          name="front_toe"         v={v('front_toe')}         upd={upd} opts={O.front_toe} />
+                <Field label="Ride height (mm)" name="front_ride_height" v={v('front_ride_height')} upd={upd} type="number" />
               </Group>
             </div>
           </div>
@@ -698,7 +691,7 @@ export function SetupForm({ userId }: { userId: string }) {
               <Group title="Ball Stud Mount">
                 <Field label="Material" name="rear_ball_stud_mount_material" v={v('rear_ball_stud_mount_material')} upd={upd} opts={O.bsm_material} />
                 <Field label="Position" name="rear_ball_stud_mount_position" v={v('rear_ball_stud_mount_position')} upd={upd} opts={O.ball_stud_position} />
-                <Field label="Washers"  name="rear_ball_stud_mount_washers"  v={v('rear_ball_stud_mount_washers')}  upd={upd} type="number" />
+                <Field label="Washers"  name="rear_ball_stud_mount_washers"  v={v('rear_ball_stud_mount_washers')}  upd={upd} opts={O.rear_bsm_washers} />
               </Group>
 
               <Group title="Arms">
@@ -715,18 +708,17 @@ export function SetupForm({ userId }: { userId: string }) {
               <Group title="Hub Carrier">
                 <Field label="Material"           name="rear_hub_carrier_material"   v={v('rear_hub_carrier_material')}   upd={upd} opts={O.rear_hub_carrier_mat} />
                 <Field label="Position"           name="rear_hub_carrier_position"   v={v('rear_hub_carrier_position')}   upd={upd} opts={O.rear_hub_carrier_pos} />
-                <Field label="Hub height"         name="rear_hub_height"             v={v('rear_hub_height')}             upd={upd} opts={O.mm_steps} />
-                <Field label="Link mount washers" name="rear_link_mount_washers"     v={v('rear_link_mount_washers')}     upd={upd} opts={O.mm_steps} />
-                <Field label="Link mount orient." name="rear_link_mount_orientation" v={v('rear_link_mount_orientation')} upd={upd} opts={O.rear_link_orient} />
+                <Field label="Hub height insert"       name="rear_hub_height"             v={v('rear_hub_height')}             upd={upd} opts={O.front_hub_height} />
+                <Field label="Link mount washers"      name="rear_link_mount_washers"     v={v('rear_link_mount_washers')}     upd={upd} opts={O.mm_steps} />
+                <Field label="Link mount orientation"  name="rear_link_mount_orientation" v={v('rear_link_mount_orientation')} upd={upd} opts={O.rear_link_orient} />
                 <Field label="Ball stud washers"  name="rear_ball_stud_washers"      v={v('rear_ball_stud_washers')}      upd={upd} opts={O.mm_steps} />
               </Group>
 
               <Group title="Geometry">
-                <InOutField label="Camber (°)"  name="rear_camber"      v={v} upd={upd} />
-                <InOutField label="Toe (°)"     name="rear_toe"         v={v} upd={upd} />
+                <Field label="Camber (°)"       name="rear_camber"      v={v('rear_camber')}      upd={upd} opts={O.front_camber} />
+                <Field label="Toe (°)"          name="rear_toe"         v={v('rear_toe')}         upd={upd} opts={O.rear_toe} />
                 <Field label="Anti-squat"       name="rear_anti_squat"  v={v('rear_anti_squat')}  upd={upd} opts={O.anti_squat} />
                 <Field label="Ride height (mm)" name="rear_ride_height" v={v('rear_ride_height')} upd={upd} type="number" />
-                <Field label="Sway bar"         name="rear_sway_bar"    v={v('rear_sway_bar')}    upd={upd} opts={O.rear_sway_bar} />
                 <Field label="Wheel hub"        name="rear_wheel_hub"   v={v('rear_wheel_hub')}   upd={upd} opts={O.wheel_hub} />
               </Group>
             </div>
@@ -737,7 +729,12 @@ export function SetupForm({ userId }: { userId: string }) {
         {tab === 'front-shocks' && (
           <div className={CARD}>
             <h2 className="mb-6 text-xl font-semibold text-white">Front Shocks</h2>
-            <ShockPanel pos="front" v={v} upd={upd} />
+            <div className="space-y-4">
+              <ShockPanel pos="front" v={v} upd={upd} />
+              <Group title="Sway Bar">
+                <Field label="Sway bar" name="front_sway_bar" v={v('front_sway_bar')} upd={upd} opts={O.front_sway_bar} />
+              </Group>
+            </div>
           </div>
         )}
 
@@ -745,7 +742,12 @@ export function SetupForm({ userId }: { userId: string }) {
         {tab === 'rear-shocks' && (
           <div className={CARD}>
             <h2 className="mb-6 text-xl font-semibold text-white">Rear Shocks</h2>
-            <ShockPanel pos="rear" v={v} upd={upd} />
+            <div className="space-y-4">
+              <ShockPanel pos="rear" v={v} upd={upd} />
+              <Group title="Sway Bar">
+                <Field label="Sway bar" name="rear_sway_bar" v={v('rear_sway_bar')} upd={upd} opts={O.rear_sway_bar} />
+              </Group>
+            </div>
           </div>
         )}
 
@@ -753,7 +755,6 @@ export function SetupForm({ userId }: { userId: string }) {
         {tab === 'tires' && (
           <div className={CARD}>
             <h2 className="mb-6 text-xl font-semibold text-white">Tires &amp; Wheels</h2>
-            <p className="mb-4 text-sm text-gray-500">Tire: JConcepts Smoothie 2</p>
             <div className={G2}>
               <Field label="Front compound" name="front_compound" v={v('front_compound')} upd={upd} opts={O.compound} />
               <Field label="Rear compound"  name="rear_compound"  v={v('rear_compound')}  upd={upd} opts={O.compound} />
@@ -767,8 +768,8 @@ export function SetupForm({ userId }: { userId: string }) {
             <h2 className="mb-6 text-xl font-semibold text-white">Body &amp; Wing</h2>
             <div className={G2}>
               <Field label="Body"                name="body"                v={v('body')}                upd={upd} opts={O.body} />
-              <Field label="Front wing mount"    name="front_wing_mount"    v={v('front_wing_mount')}    upd={upd} opts={O.front_wing_mount} />
-              <Field label="Front wing material" name="front_wing_material" v={v('front_wing_material')} upd={upd} opts={O.front_wing_material} />
+              <Field label="Front wing"       name="front_wing_mount"    v={v('front_wing_mount')}    upd={upd} opts={O.front_wing_mount} />
+              <Field label="Front wing mount" name="front_wing_material" v={v('front_wing_material')} upd={upd} opts={O.front_wing_material} />
               <Field label="Rear wing size"      name="rear_wing_size"      v={v('rear_wing_size')}      upd={upd} opts={O.rear_wing_size} />
               <Field label="Rear wing height"    name="rear_wing_height"    v={v('rear_wing_height')}    upd={upd} opts={O.rear_wing_height} />
             </div>
