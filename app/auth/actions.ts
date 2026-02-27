@@ -46,3 +46,41 @@ export async function signOut() {
   revalidatePath('/', 'layout')
   redirect('/')
 }
+
+export async function resetPassword(formData: FormData) {
+  const supabase = await createClient()
+  const email = formData.get('email') as string
+  const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://superoffroadrc.com/auth/reset-password',
+  })
+  if (error) redirect(`/auth/forgot-password?error=${encodeURIComponent(error.message)}`)
+  redirect('/auth/forgot-password?sent=1')
+}
+
+export async function resetPasswordUpdate(formData: FormData) {
+  const supabase = await createClient()
+  const code = formData.get('code') as string
+  const password = formData.get('password') as string
+  const confirmPassword = formData.get('confirm_password') as string
+
+  if (password !== confirmPassword) {
+    redirect(
+      `/auth/reset-password?code=${encodeURIComponent(code)}&error=${encodeURIComponent('Passwords do not match')}`
+    )
+  }
+
+  const { error: exchangeError } = await supabase.auth.exchangeCodeForSession(code)
+  if (exchangeError) {
+    redirect(`/auth/reset-password?error=${encodeURIComponent(exchangeError.message)}`)
+  }
+
+  const { error } = await supabase.auth.updateUser({ password })
+  if (error) {
+    redirect(
+      `/auth/reset-password?code=${encodeURIComponent(code)}&error=${encodeURIComponent(error.message)}`
+    )
+  }
+
+  revalidatePath('/', 'layout')
+  redirect('/dashboard')
+}

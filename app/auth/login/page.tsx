@@ -36,9 +36,14 @@ export default async function LoginPage({
           </div>
 
           <div>
-            <label className="mb-1.5 block text-sm font-medium text-gray-300">
-              Password
-            </label>
+            <div className="mb-1.5 flex items-center justify-between">
+              <label className="block text-sm font-medium text-gray-300">
+                Password
+              </label>
+              <Link href="/auth/forgot-password" className="text-xs text-gray-500 hover:text-white hover:underline transition-colors">
+                Forgot password?
+              </Link>
+            </div>
             <input
               name="password"
               type="password"

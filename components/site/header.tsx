@@ -9,14 +9,12 @@ import type { User } from '@supabase/supabase-js';
 import { signOut } from '@/app/auth/actions';
 
 const navLinks = [
-  { href: '/', label: 'Home' },
   { href: '/setups', label: 'Setups' },
   { href: '/tracks', label: 'Tracks' },
   { href: '/tools', label: 'Tools' },
   { href: '/tips', label: 'Tips' },
   { href: '/manuals', label: 'Manuals' },
   { href: '/submit', label: 'Submit' },
-  { href: '/about', label: 'About' },
 ];
 
 export function Header({ user }: { user: User | null }) {
@@ -53,15 +51,15 @@ export function Header({ user }: { user: User | null }) {
           ))}
           {user && (
             <Link
-              href="/notebook"
+              href="/dashboard"
               className={cn(
                 'rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                pathname === '/notebook'
+                pathname === '/dashboard'
                   ? 'text-yokomo-blue'
                   : 'text-gray-400 hover:text-white'
               )}
             >
-              Notebook
+              Dashboard
             </Link>
           )}
           {user ? (
@@ -114,16 +112,16 @@ export function Header({ user }: { user: User | null }) {
             ))}
             {user && (
               <Link
-                href="/notebook"
+                href="/dashboard"
                 onClick={() => setMobileOpen(false)}
                 className={cn(
                   'rounded-md px-3 py-2.5 text-sm font-medium transition-colors',
-                  pathname === '/notebook'
+                  pathname === '/dashboard'
                     ? 'bg-yokomo-blue/10 text-yokomo-blue'
                     : 'text-gray-400 hover:bg-white/5 hover:text-white'
                 )}
               >
-                Notebook
+                Dashboard
               </Link>
             )}
             {user ? (
