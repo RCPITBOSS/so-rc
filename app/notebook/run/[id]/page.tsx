@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase-server'
 import { RunLogForm } from '@/components/notebook/run-log-form'
@@ -24,11 +25,13 @@ export default async function RunLogPage({
 
   return (
     <div className="container max-w-2xl py-12">
-      <RunLogForm
-        setupId={setup.id}
-        setupName={setup.name}
-        userId={user.id}
-      />
+      <Suspense>
+        <RunLogForm
+          setupId={setup.id}
+          setupName={setup.name}
+          userId={user.id}
+        />
+      </Suspense>
     </div>
   )
 }

@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 
 // ─── Style constants — matched to site design language (submit-forms, setups-content) ──
@@ -93,9 +95,16 @@ const SPRING_BRANDS = ['Yokomo', 'Yokomo Flex', 'Associated', 'X-Gear', 'Xray Co
 
 // ─── Computed option lists ─────────────────────────────────────────────────────
 const OIL_CST: string[] = [
-  '100', '150', '200',
-  ...Array.from({ length: 32 }, (_, i) => String(225 + i * 25)),
-  '1100', '1200', '1300',
+  '250', '275', '300', '313', '325', '350', '375', '388',
+  '400', '425', '450', '463', '475', '500', '525', '538',
+  '550', '575', '600', '613', '625', '640', '650',
+]
+
+const FRONT_SHAFT_LENGTHS = [
+  '20.0', '20.25', '20.5', '20.75',
+  '21', '21.25', '21.5', '21.75',
+  '22.0', '22.25', '22.5', '22.75',
+  '23',
 ]
 
 const SHAFT_LENGTHS = [
@@ -110,9 +119,9 @@ const SHAFT_LENGTHS = [
 const O = {
   surface:                ['Carpet', 'Astroturf', 'Clay', 'Dirt'],
   track_feel:             ['Smooth', 'Bumpy'],
-  traction_level:         ['Low', 'Medium', 'High', 'Blue Groove'],
+  traction_level:         ['Low', 'Medium', 'Medium High', 'High', 'Blue Groove'],
   track_temp:             ['Cold (<50°F)', 'Mild (50–70°F)', 'Warm (70–85°F)', 'Hot (>85°F)'],
-  conditions:             ['Wet', 'Dry', 'Dusty'],
+  conditions:             ['Wet', 'Damp', 'Dry', 'Dusty'],
   main_chassis:           ['SO 2.0', 'SO 3.0', 'DTM 3.1', 'CAL 3.1'],
   side_plate:             ['Standard', 'Graphite'],
   gearbox:                ['LD', 'LCA', 'LCG'],
@@ -131,7 +140,8 @@ const O = {
   shock_tower_hole:       ['1', '2', '3', '4', '5'],
   bsm_material:           ['Plastic', 'Aluminum'],
   ball_stud_position:     ['Inside', 'Middle', 'Outside'],
-  arm_shock_mount:        ['Inner', 'Middle', 'Outer'],
+  arm_shock_mount:        ['1', '2', '3', '4', '5'],
+  front_arm_shock_mount:  ['Inside', 'Middle', 'Outside'],
   arm_material:           ['Standard', 'Graphite'],
   front_bsm_width:        ['Standard', 'Narrow'],
   front_susp_height:      ['0', '+1'],
@@ -153,6 +163,7 @@ const O = {
   caster_insert:          ['-5°', '-2.5°', '0°', '2.5°', '5°'],
   front_axle:             ['4.5mm', '5mm'],
   front_sway_bar:         ['None', '0.9mm', '1.0mm', '1.1mm'],
+  front_bsm_washers:      ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
   rear_bsm_washers:       ['0', '1', '1.5', '2', '2.5', '3', '3.5', '4', '4.5', '5'],
   rear_toe:               ['0', '0.5', '1', '1.5', '2', '2.5', '3', '3.5', '4'],
   rear_arm_length:        ['S3', 'L5'],
@@ -174,7 +185,7 @@ const O = {
   eyelet_length:          ['Short', 'Medium', 'Long'],
   compound:               ['Aqua', 'Silver'],
   body:                   ['SO Standard', 'SO Lightweight', 'RO 1.0', 'JConcepts DTM F2', 'JConcepts DTM F2 Lightweight', 'JConcepts P2k'],
-  front_wing_mount:       ['Wide', 'Narrow'],
+  front_wing_mount:       ['None', 'Wide', 'Narrow'],
   front_wing_material:    ['Plastic', 'Aluminum'],
   rear_wing_size:         ['6.5"', '7"'],
   rear_wing_height:       ['Up', 'Down'],
@@ -226,7 +237,7 @@ const ALL_KEYS = [
   'rear_shock_eyelet_length', 'rear_shock_shaft_length',
   'front_compound', 'rear_compound',
   'body', 'front_wing_mount', 'front_wing_material', 'rear_wing_size', 'rear_wing_height',
-  'motor', 'spur', 'pinion', 'battery', 'esc',
+  'motor', 'spur', 'pinion', 'battery', 'esc', 'servo',
 ]
 
 const TABS = [
@@ -362,7 +373,7 @@ function ShockPanel({
         <Field label="Inner spacer"  name={`${p}inner_spacer`}  opts={O.spacer}        v={v(`${p}inner_spacer`)}  upd={upd} />
         <Field label="Outer spacer"  name={`${p}outer_spacer`}  opts={O.spacer}        v={v(`${p}outer_spacer`)}  upd={upd} />
         <Field label="Eyelet length" name={`${p}eyelet_length`} opts={O.eyelet_length} v={v(`${p}eyelet_length`)} upd={upd} />
-        <Field label="Shaft length"  name={`${p}shaft_length`}  opts={SHAFT_LENGTHS}   v={v(`${p}shaft_length`)}  upd={upd} />
+        <Field label="Shaft length"  name={`${p}shaft_length`}  opts={pos === 'front' ? FRONT_SHAFT_LENGTHS : SHAFT_LENGTHS}   v={v(`${p}shaft_length`)}  upd={upd} />
       </Group>
     </div>
   )
@@ -376,10 +387,16 @@ export function SetupForm({ userId }: { userId: string }) {
   )
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
-  const [savedSetups, setSavedSetups] = useState<{ id: string; name: string; created_at: string }[]>([])
+  const [savedSetups, setSavedSetups] = useState<{ id: string; name: string | null; created_at: string }[]>([])
   const [loading, setLoading] = useState(false)
+  const [loadedSetupId, setLoadedSetupId] = useState<string | null>(null)
+  const [savedSetupId, setSavedSetupId] = useState<string | null>(null)
+  const searchParams = useSearchParams()
 
-  const upd = (n: string, val: string) => setForm(prev => ({ ...prev, [n]: val }))
+  const upd = (n: string, val: string) => {
+    setForm(prev => ({ ...prev, [n]: val }))
+    if (savedSetupId) { setStatus('idle'); setSavedSetupId(null) }
+  }
   const v   = (n: string) => form[n] ?? ''
 
   useEffect(() => {
@@ -388,9 +405,15 @@ export function SetupForm({ userId }: { userId: string }) {
       .from('setups')
       .select('id, name, created_at')
       .eq('user_id', userId)
-      .order('created_at', { ascending: false })
+      .order('created_at', { ascending: true })
       .then(({ data }) => { if (data) setSavedSetups(data) })
   }, [userId])
+
+  useEffect(() => {
+    const loadId = searchParams.get('load')
+    if (loadId) loadSetup(loadId)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   async function loadSetup(id: string) {
     if (!id) return
@@ -398,6 +421,7 @@ export function SetupForm({ userId }: { userId: string }) {
     const supabase = createClient()
     const { data } = await supabase.from('setups').select('*').eq('id', id).single()
     if (data) {
+      setLoadedSetupId(id)
       const sd: Record<string, unknown> = data.setup_data ?? {}
       setForm(prev => {
         const next = { ...prev }
@@ -432,17 +456,39 @@ export function SetupForm({ userId }: { userId: string }) {
     }
 
     const supabase = createClient()
-    const { error } = await supabase.from('setups').insert({
-      user_id:    userId,
-      name:       form.name || null,
-      notes:      form.notes || null,
-      car_model:  form.main_chassis || null,
-      setup_data: setupData,
-    })
+    let savedId = ''
+    let error: { message: string } | null = null
+
+    if (loadedSetupId) {
+      const { error: updateError } = await supabase.from('setups').update({
+        name:       form.name || null,
+        notes:      form.notes || null,
+        car_model:  form.main_chassis || null,
+        setup_data: setupData,
+      }).eq('id', loadedSetupId)
+      error = updateError
+      savedId = loadedSetupId
+    } else {
+      const { data: inserted, error: insertError } = await supabase.from('setups').insert({
+        user_id:    userId,
+        name:       form.name || null,
+        notes:      form.notes || null,
+        car_model:  form.main_chassis || null,
+        setup_data: setupData,
+      }).select('id').single()
+      error = insertError
+      savedId = inserted?.id ?? ''
+      if (!insertError) setLoadedSetupId(savedId)
+    }
 
     if (error) { setErrorMsg(error.message); setStatus('error') }
-    else        { setStatus('saved') }
+    else        { setStatus('saved'); setSavedSetupId(savedId) }
   }
+
+  const dropdownOptions = savedSetups.map(s => {
+    const date = new Date(s.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return { id: s.id, label: `${s.name || '(unnamed)'} — ${date}` }
+  })
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -458,10 +504,8 @@ export function SetupForm({ userId }: { userId: string }) {
             className="rounded-lg border border-white/10 bg-[#0A0A0A] px-3 py-1.5 text-sm text-gray-300 focus:border-yokomo-blue focus:outline-none focus:ring-1 focus:ring-yokomo-blue disabled:opacity-50"
           >
             <option value="">{loading ? 'Loading…' : 'Load a saved setup…'}</option>
-            {savedSetups.map(s => (
-              <option key={s.id} value={s.id}>
-                {s.name || '(unnamed)'} — {new Date(s.created_at).toLocaleDateString()}
-              </option>
+            {dropdownOptions.map(opt => (
+              <option key={opt.id} value={opt.id}>{opt.label}</option>
             ))}
           </select>
         </div>
@@ -573,10 +617,11 @@ export function SetupForm({ userId }: { userId: string }) {
                 <Field label="Material"           name="front_ball_stud_mount_material" v={v('front_ball_stud_mount_material')} upd={upd} opts={O.bsm_material} />
                 <Field label="Width"              name="front_ball_stud_mount_width"    v={v('front_ball_stud_mount_width')}    upd={upd} opts={O.front_bsm_width} />
                 <Field label="Ball stud position" name="front_ball_stud_position"       v={v('front_ball_stud_position')}       upd={upd} opts={O.ball_stud_position} />
+                <Field label="Ball stud washers"  name="front_ball_stud_mount_washers"  v={v('front_ball_stud_mount_washers')}  upd={upd} opts={O.front_bsm_washers} />
               </Group>
 
               <Group title="Arms">
-                <Field label="Shock mount" name="front_arm_shock_mount" v={v('front_arm_shock_mount')} upd={upd} opts={O.arm_shock_mount} />
+                <Field label="Shock mount" name="front_arm_shock_mount" v={v('front_arm_shock_mount')} upd={upd} opts={O.front_arm_shock_mount} />
                 <Field label="Material"    name="front_arm_material"    v={v('front_arm_material')}    upd={upd} opts={O.arm_material} />
               </Group>
 
@@ -631,7 +676,7 @@ export function SetupForm({ userId }: { userId: string }) {
 
               <Group title="Ball Stud Mount">
                 <Field label="Material" name="rear_ball_stud_mount_material" v={v('rear_ball_stud_mount_material')} upd={upd} opts={O.bsm_material} />
-                <Field label="Position" name="rear_ball_stud_mount_position" v={v('rear_ball_stud_mount_position')} upd={upd} opts={O.ball_stud_position} />
+                <Field label="Ball stud position" name="rear_ball_stud_mount_position" v={v('rear_ball_stud_mount_position')} upd={upd} opts={O.ball_stud_position} />
                 <Field label="Washers"  name="rear_ball_stud_mount_washers"  v={v('rear_ball_stud_mount_washers')}  upd={upd} opts={O.rear_bsm_washers} />
               </Group>
 
@@ -726,16 +771,36 @@ export function SetupForm({ userId }: { userId: string }) {
               <Field label="Spur (T)"   name="spur"    v={v('spur')}    upd={upd} type="number" />
               <Field label="Pinion (T)" name="pinion"  v={v('pinion')}  upd={upd} type="number" />
               <Field label="Battery"    name="battery" v={v('battery')} upd={upd} />
-              <Field label="ESC"        name="esc"     v={v('esc')}     upd={upd} opts={O.esc} />
+              <Field label="ESC"        name="esc"     v={v('esc')}     upd={upd} />
+              <Field label="Servo"      name="servo"   v={v('servo')}   upd={upd} />
             </div>
           </div>
         )}
       </div>
 
       {/* ── Submit ── */}
+      {status === 'saved' && savedSetupId && (
+        <div className="rounded-lg border border-green-900/40 bg-green-950/30 px-5 py-4">
+          <p className="mb-3 text-sm font-medium text-green-400">Setup saved!</p>
+          <div className="flex flex-wrap gap-3">
+            <Link
+              href={`/notebook/run/${savedSetupId}`}
+              className="inline-flex items-center rounded-lg bg-yokomo-blue px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-yokomo-blue/90"
+            >
+              Log a run &rarr;
+            </Link>
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center rounded-lg border border-white/10 px-4 py-2 text-sm font-semibold text-gray-300 transition-colors hover:border-white/20 hover:text-white"
+            >
+              Back to Dashboard &rarr;
+            </Link>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between gap-4">
         <div>
-          {status === 'saved' && <p className="text-sm text-green-400">Setup saved.</p>}
           {status === 'error' && <p className="text-sm text-red-400">{errorMsg || 'Failed to save.'}</p>}
         </div>
         <button

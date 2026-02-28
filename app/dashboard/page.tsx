@@ -3,24 +3,33 @@ import Link from 'next/link'
 import { createClient } from '@/lib/supabase-server'
 import { SetupList } from '@/components/dashboard/setup-list'
 
+export interface SetupRow {
+  id: string
+  name: string | null
+  notes: string | null
+  created_at: string
+}
+
 export default async function DashboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/auth/login')
 
-  const { data: setups } = await supabase
+  const { data: allSetups } = await supabase
     .from('setups')
-    .select('id, name, car_model, created_at, notes')
+    .select('id, name, notes, created_at')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
 
-  const setupIds = (setups ?? []).map(s => s.id)
-  const { data: runs } = setupIds.length > 0
+  const setups: SetupRow[] = allSetups ?? []
+
+  const allSetupIds = setups.map(s => s.id)
+  const { data: runs } = allSetupIds.length > 0
     ? await supabase
         .from('runs')
         .select('id, run_type, rating, crashes, notes, created_at, setup_snapshot_id')
-        .in('setup_snapshot_id', setupIds)
+        .in('setup_snapshot_id', allSetupIds)
         .order('created_at', { ascending: false })
     : { data: [] }
 
@@ -56,7 +65,7 @@ export default async function DashboardPage() {
       {/* ── Your Setups ── */}
       <section>
         <h2 className="mb-4 text-lg font-semibold text-white">Your Setups</h2>
-        <SetupList initialSetups={setups ?? []} initialRuns={runs ?? []} />
+        <SetupList initialSetups={setups} initialRuns={runs ?? []} />
       </section>
 
     </div>
