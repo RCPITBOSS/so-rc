@@ -8,6 +8,7 @@ interface Track {
   location: string;
   surface: string;
   website?: string;
+  liverc_url?: string;
 }
 
 const tracks: Track[] = [
@@ -101,11 +102,13 @@ const tracks: Track[] = [
     name: 'MHOR R/C Raceway',
     location: 'Aurora, CO',
     surface: 'Indoor Dirt/Clay',
+    liverc_url: 'https://mhorrc.liverc.com',
   },
   {
     name: 'MHOR R/C Raceway',
     location: 'Aurora, CO',
     surface: 'Turf',
+    liverc_url: 'https://mhorrc.liverc.com',
   },
   {
     name: 'Nor-Cal Hobbies & Raceway',
@@ -259,16 +262,31 @@ export function TracksContent() {
               <span className="mb-3 inline-block rounded bg-white/10 px-2 py-0.5 text-xs text-gray-500">
                 {track.surface}
               </span>
-              {track.website && (
-                <a
-                  href={track.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mt-2 flex items-center gap-1 text-sm font-medium text-yokomo-blue hover:underline"
-                >
-                  <ExternalLink className="h-3.5 w-3.5" />
-                  Visit Website
-                </a>
+              {(track.website || track.liverc_url) && (
+                <div className="mt-2 flex flex-wrap gap-3">
+                  {track.website && (
+                    <a
+                      href={track.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm font-medium text-yokomo-blue hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      Visit Website
+                    </a>
+                  )}
+                  {track.liverc_url && (
+                    <a
+                      href={track.liverc_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm font-medium text-yokomo-blue hover:underline"
+                    >
+                      <ExternalLink className="h-3.5 w-3.5" />
+                      LiveRC &rarr;
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           ))}
