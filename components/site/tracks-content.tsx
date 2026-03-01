@@ -92,9 +92,10 @@ const tracks: Track[] = [
     liverc_url: 'https://hobbyactionrcraceway.liverc.com',
   },
   {
-    name: 'HobbyTown',
+    name: 'Hobbyplex',
     location: 'Omaha, NE',
     surface: 'Indoor Dirt/Clay',
+    liverc_url: 'https://hobbyplexraceway.liverc.com',
   },
   {
     name: "Larry's Performance RC",
